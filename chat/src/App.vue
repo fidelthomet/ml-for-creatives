@@ -44,17 +44,15 @@ export default {
 </script>
 
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i|Ubuntu+Mono|Ubuntu:400,500,700&subset=greek,latin-ext");
+
 *, *:before, *:after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  font-family: "Noto Sans", sans-serif; 
   display: flex;
   justify-content: center;
   align-items: flex-end;
