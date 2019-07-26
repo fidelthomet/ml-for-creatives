@@ -2,7 +2,7 @@ let serverIP = "192.168.10.188";
 
 const socket = new WebSocket(`ws://${serverIP}:8080`);
 const id = `${Math.random()}`;
-
+const dunes = 'https://images.unsplash.com/photo-1563985336376-568060942b80?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9'
 // let poseNet
 let video;
 let classifier;
@@ -69,28 +69,43 @@ function setup() {
 function classifyAndSend() {
     classify()
         .then(d => {
-            label = d.label;
-            classificationOutput && classificationOutput.remove();
-            classificationOutput = createP(d.label);
-            return searchUnsplash(d.label)
+            // label = d.label;
+            // classificationOutput && classificationOutput.remove();
+            // classificationOutput = createP(d.label);
+            return searchUnsplash(d)
         })
-        .then(url => {
+        .then(({label, url}) => {
             socket.send(JSON.stringify({label, url, id}))
         })
 }
 
-function searchUnsplash(keyword) {
-    return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keyword}`)
+function searchUnsplash(keywords) {
+    return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keyword[0]}`)
         .then(r => r.text())
         .then(d => {
             const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
             const r = JSON.parse(json)
             const photoIds = (Object.keys(r.entities.photos))
             const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
-            loadImage(photo.urls.small, img => {
-                image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
-            })
-            return photo.urls.small;
+            if (photos.urls.small === dunes) {
+                loadImage(photo.urls.small, img => {
+                    image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
+                })
+                return {url: photo.urls.small, label: keywords[0]};
+            } else {
+              return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keyword[1]}`)
+                  .then(r => r.text())
+                  .then(d => {
+                      const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
+                      const r = JSON.parse(json)
+                      const photoIds = (Object.keys(r.entities.photos))
+                      const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
+                      loadImage(photo.urls.small, img => {
+                          image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
+                      })
+                      return {url: photo.urls.small, label: keywords[1]};
+                  })
+            }
         })
 }
 
