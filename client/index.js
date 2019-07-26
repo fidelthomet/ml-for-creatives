@@ -1,5 +1,7 @@
-const socket = new WebSocket('ws://localhost:8080');
-const id = `${Math.random()}`
+let serverIP = "localhost";
+
+const socket = new WebSocket(`ws://${serverIP}:8080`);
+const id = `${Math.random()}`;
 
 // let poseNet
 let video;
