@@ -1,5 +1,7 @@
-const socket = new WebSocket('ws://192.168.10.188:8080');
-const id = `${Math.random()}`
+let serverIP = "localhost";
+
+const socket = new WebSocket(`ws://${serverIP}:8080`);
+const id = `${Math.random()}`;
 
 // let poseNet
 let video;
@@ -11,21 +13,21 @@ let size = 200;
 let outputWindow = {
     x: 0,
     y: 0,
-    sizeX: size*3,
-    sizeY: size*2
+    sizeX: size * 3,
+    sizeY: size * 2
 };
 
 let captureWindow = {
     x: outputWindow.sizeX,
     y: outputWindow.sizeY,
     offsetX: 400,
-    offsetY:0,
+    offsetY: 0,
     sizeX: 200,
     sizeY: 200
 };
 
 let previewWindow = {
-    x: outputWindow.sizeX+captureWindow.sizeX,
+    x: outputWindow.sizeX + captureWindow.sizeX,
     y: 0,
     offsetX: captureWindow.offsetX,
     offsetY: captureWindow.offsetY,
@@ -47,16 +49,22 @@ function setup() {
     video = createCapture(VIDEO);
 
     video.hide();
-    createCanvas(5 * size,3*size);
+    createCanvas(5 * size, 3 * size);
+
+    let label ="";
 
     window.setInterval(() => {
-        if(!calibrationMode){
+        if (!calibrationMode) {
             classify()
                 .then(d => {
+                    label = d.label;
                     classificationOutput && classificationOutput.remove();
                     classificationOutput = createP(d.label);
                     return searchUnsplash(d.label)
-                });
+                })
+                .then(url => {
+                    socket.send(JSON.stringify({label, url, id}))
+                })
         }
 
     }, 5000)
@@ -67,18 +75,19 @@ function searchUnsplash(keyword) {
         .then(r => r.text())
         .then(d => {
             const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
-      const r = JSON.parse(json)
+            const r = JSON.parse(json)
             const photoIds = (Object.keys(r.entities.photos))
             const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
             loadImage(photo.urls.small, img => {
                 image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
             })
+            return photo.urls.small;
         })
 }
 
 function draw() {
-    if(calibrationMode){
-        image(video,previewWindow.x, previewWindow.y, previewWindow.sizeX, previewWindow.sizeY,previewWindow.offsetX,previewWindow.offsetY,previewWindow.sizeX,previewWindow.sizeY)
+    if (calibrationMode) {
+        image(video, previewWindow.x, previewWindow.y, previewWindow.sizeX, previewWindow.sizeY, previewWindow.offsetX, previewWindow.offsetY, previewWindow.sizeX, previewWindow.sizeY)
     }
 }
 
@@ -86,14 +95,14 @@ function draw() {
 function classify() {
     video = createCapture(VIDEO);
 
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (video) {
                 video.hide();
                 stillImage = video.get(captureWindow.offsetX, captureWindow.offsetY, captureWindow.sizeX, captureWindow.sizeY);
                 image(stillImage, captureWindow.x, captureWindow.y, captureWindow.sizeX, captureWindow.sizeY);
                 return getClassifier(stillImage)
-                    .then(classifier => resolve(classifyAndGetFirstResult(classifier,stillImage)));
+                    .then(classifier => resolve(classifyAndGetFirstResult(classifier, stillImage)));
             }
         }, 500)
 
@@ -131,6 +140,6 @@ socket.addEventListener('message', ({data}) => {
     }
 })
 
-function done () {
+function done() {
     socket.send(`done/${id}`)
 }
