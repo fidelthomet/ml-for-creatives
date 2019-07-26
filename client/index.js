@@ -1,4 +1,4 @@
-let serverIP = "localhost";
+let serverIP = "192.168.10.188";
 
 const socket = new WebSocket(`ws://${serverIP}:8080`);
 const id = `${Math.random()}`;
