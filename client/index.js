@@ -54,10 +54,10 @@ function setup() {
     let label = "";
 
     socket.addEventListener('message', (dataStr) => {
-        console.log("received: " + dataStr)
+        console.log(dataStr.data)
         calibrationMode = false;
         clear();
-        let data = JSON.parse(dataStr);
+        let data = JSON.parse(dataStr.data);
         if (data.id !== id) {
             classifyAndSend();
         }
