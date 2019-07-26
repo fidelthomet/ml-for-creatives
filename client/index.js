@@ -63,7 +63,7 @@ function setup() {
                     return searchUnsplash(d.label)
                 })
                 .then(url => {
-                    socket.send(JSON.stringify({label, url}))
+                    socket.send(JSON.stringify({label, url, id}))
                 })
         }
 
