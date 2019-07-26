@@ -54,6 +54,7 @@ function setup() {
     let label = "";
 
     socket.addEventListener('message', ({dataStr}) => {
+        console.log("received: " + dataStr)
         calibrationMode = false;
         clear();
         let data = JSON.parse(dataStr);
@@ -134,7 +135,3 @@ function classifyAndGetFirstResult(classifier, stillImage) {
             }
         })
 }
-
-socket.addEventListener('open', function (event) {
-    socket.send(`init/${id}`)
-});
