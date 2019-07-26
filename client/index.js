@@ -13,8 +13,8 @@ let size = 200;
 let outputWindow = {
     x: 0,
     y: 0,
-    sizeX: size * 3,
-    sizeY: size * 2
+    sizeX: size * 6,
+    sizeY: size * 3
 };
 
 let captureWindow = {
@@ -49,7 +49,7 @@ function setup() {
     video = createCapture(VIDEO);
 
     video.hide();
-    createCanvas(5 * size, 3 * size);
+    createCanvas(10 * size, 3 * size);
 
     let label ="";
 
