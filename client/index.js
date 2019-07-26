@@ -11,13 +11,13 @@ let size = 200;
 let outputWindow = {
     x: 0,
     y: 0,
-    sizeX: size,
-    sizeY: size
+    sizeX: size*3,
+    sizeY: size*2
 };
 
 let captureWindow = {
     x: outputWindow.sizeX,
-    y: 0,
+    y: outputWindow.sizeY,
     offsetX: 400,
     offsetY:0,
     sizeX: 200,
@@ -47,7 +47,7 @@ function setup() {
     video = createCapture(VIDEO);
 
     video.hide();
-    createCanvas(5 * size,1*size);
+    createCanvas(5 * size,3*size);
 
     window.setInterval(() => {
         if(!calibrationMode){
