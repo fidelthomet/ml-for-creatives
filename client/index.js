@@ -7,6 +7,8 @@ const dunes = 'https://images.unsplash.com/photo-1563985336376-568060942b80?ixli
 let video;
 let classifier;
 let classificationOutput;
+let charRNN;
+let charRNNalt;
 
 let size = 200;
 
@@ -39,6 +41,7 @@ let previewWindow = {
 calibrationMode = true;
 
 function mouseClicked() {
+    charRNN = charRNNalt
     calibrationMode = false;
     clear();
     classifyAndSend();
@@ -64,6 +67,9 @@ function setup() {
             classifyAndSend();
         }
     })
+
+    charRNN = ml5.charRNN('./models/jkrowling_HP/')
+    charRNNalt = ml5.charRNN('./models/hemingway/')
 }
 
 function classifyAndSend() {
@@ -75,12 +81,27 @@ function classifyAndSend() {
             return searchUnsplash(d)
         })
         .then(({label, url}) => {
-            socket.send(JSON.stringify({label, url, id}))
+            let txt = label.toLowerCase();
+            let data = {
+              seed: txt,
+              temperature: 0.75,
+              length: 160
+            }
+            charRNN.generate(data, (err, result) => {
+              let output = `${txt}${result.sample}`
+              console.log(output)
+              output = output.replace(/\n/g, ' ').trim()
+              console.log(output)
+              output = output.match(/^(.*)\s([^\s]+)$/)[1]
+              console.log(output)
+              socket.send(JSON.stringify({label: output, url, id}))
+            });
         })
 }
 
 function searchUnsplash(keywords) {
-    return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keywords[0]}`)
+    const label = keywords[0].split(',')[0]
+    return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${label}`)
         .then(r => r.text())
         .then(d => {
             const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
@@ -96,7 +117,7 @@ function searchUnsplash(keywords) {
             loadImage(photo.urls.small, img => {
                 image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
             })
-            return {url: photo.urls.small, label: keywords[0]};
+            return {url: photo.urls.small, label};
         })
 }
 
