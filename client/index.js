@@ -1,4 +1,4 @@
-let serverIP = "localhost";
+let serverIP = "192.168.10.188";
 
 const socket = new WebSocket(`ws://${serverIP}:8080`);
 const id = `${Math.random()}`;
@@ -13,8 +13,8 @@ let size = 200;
 let outputWindow = {
     x: 0,
     y: 0,
-    sizeX: size * 3,
-    sizeY: size * 2
+    sizeX: size * 6,
+    sizeY: size * 3
 };
 
 let captureWindow = {
@@ -49,12 +49,13 @@ function setup() {
     video = createCapture(VIDEO);
 
     video.hide();
-    createCanvas(5 * size, 3 * size);
+    createCanvas(10 * size, 3 * size);
 
-    let label ="";
+    let label = "";
 
-    window.setInterval(() => {
-        if (!calibrationMode) {
+    socket.addEventListener('message', ({dataStr}) => {
+        let data = JSON.parse(dataStr);
+        if (dataStr.id !== id && !calibrationMode) {
             classify()
                 .then(d => {
                     label = d.label;
@@ -66,8 +67,9 @@ function setup() {
                     socket.send(JSON.stringify({label, url, id}))
                 })
         }
+    })
 
-    }, 5000)
+
 }
 
 function searchUnsplash(keyword) {
@@ -133,12 +135,6 @@ socket.addEventListener('open', function (event) {
     socket.send(`init/${id}`)
 })
 
-socket.addEventListener('message', ({data}) => {
-    console.log('received', data)
-    if (data.split('/')[0] === 'done' && data.split('/')[1] != id) {
-        console.log('do something')
-    }
-})
 
 function done() {
     socket.send(`done/${id}`)
