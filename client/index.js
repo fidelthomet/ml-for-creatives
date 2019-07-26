@@ -86,7 +86,8 @@ function searchUnsplash(keywords) {
             const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
             const r = JSON.parse(json)
             const photoIds = (Object.keys(r.entities.photos))
-            const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length - 1) + 1]]
+            const photos = photoIds.map(id => r.entities.photos[id]).filter(p => p.description !== 'Sandwich Harbour')
+            const photo = photos[Math.floor(Math.random() * photos.length)]
             loadImage(photo.urls.small, img => {
                 image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
             })
