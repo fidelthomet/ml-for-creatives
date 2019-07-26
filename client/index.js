@@ -86,26 +86,11 @@ function searchUnsplash(keywords) {
             const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
             const r = JSON.parse(json)
             const photoIds = (Object.keys(r.entities.photos))
-            const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
-            if (photo.urls.small !== dunes) {
-                loadImage(photo.urls.small, img => {
-                    image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
-                })
-                return {url: photo.urls.small, label: keywords[0]};
-            } else {
-              return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keywords[1]}`)
-                  .then(r => r.text())
-                  .then(d => {
-                      const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
-                      const r = JSON.parse(json)
-                      const photoIds = (Object.keys(r.entities.photos))
-                      const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
-                      loadImage(photo.urls.small, img => {
-                          image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
-                      })
-                      return {url: photo.urls.small, label: keywords[1]};
-                  })
-            }
+            const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length - 1) + 1]]
+            loadImage(photo.urls.small, img => {
+                image(img, outputWindow.x, outputWindow.y, outputWindow.sizeX, outputWindow.sizeY);
+            })
+            return {url: photo.urls.small, label: keywords[0]};
         })
 }
 
