@@ -39,9 +39,9 @@ let previewWindow = {
 calibrationMode = true;
 
 function mouseClicked() {
-    calibrationMode = !calibrationMode;
+    calibrationMode = false;
     clear();
-    video = createCapture(VIDEO);
+    classifyAndSend();
 }
 
 
@@ -54,22 +54,26 @@ function setup() {
     let label = "";
 
     socket.addEventListener('message', ({dataStr}) => {
+        calibrationMode = false;
+        clear();
         let data = JSON.parse(dataStr);
-        if (dataStr.id !== id && !calibrationMode) {
-            classify()
-                .then(d => {
-                    label = d.label;
-                    classificationOutput && classificationOutput.remove();
-                    classificationOutput = createP(d.label);
-                    return searchUnsplash(d.label)
-                })
-                .then(url => {
-                    socket.send(JSON.stringify({label, url, id}))
-                })
+        if (data.id !== id) {
+            classifyAndSend();
         }
     })
+}
 
-
+function classifyAndSend() {
+    classify()
+        .then(d => {
+            label = d.label;
+            classificationOutput && classificationOutput.remove();
+            classificationOutput = createP(d.label);
+            return searchUnsplash(d.label)
+        })
+        .then(url => {
+            socket.send(JSON.stringify({label, url, id}))
+        })
 }
 
 function searchUnsplash(keyword) {
@@ -133,9 +137,4 @@ function classifyAndGetFirstResult(classifier, stillImage) {
 
 socket.addEventListener('open', function (event) {
     socket.send(`init/${id}`)
-})
-
-
-function done() {
-    socket.send(`done/${id}`)
-}
+});
