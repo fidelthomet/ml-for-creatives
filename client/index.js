@@ -51,10 +51,11 @@ function setup() {
     video.hide();
     createCanvas(10 * size, 3 * size);
 
-    let label ="";
+    let label = "";
 
-    window.setInterval(() => {
-        if (!calibrationMode) {
+    socket.addEventListener('message', ({dataStr}) => {
+        let data = JSON.parse(dataStr);
+        if (dataStr.id !== id && !calibrationMode) {
             classify()
                 .then(d => {
                     label = d.label;
@@ -66,8 +67,9 @@ function setup() {
                     socket.send(JSON.stringify({label, url, id}))
                 })
         }
+    })
 
-    }, 5000)
+
 }
 
 function searchUnsplash(keyword) {
@@ -133,12 +135,6 @@ socket.addEventListener('open', function (event) {
     socket.send(`init/${id}`)
 })
 
-socket.addEventListener('message', ({data}) => {
-    console.log('received', data)
-    if (data.split('/')[0] === 'done' && data.split('/')[1] != id) {
-        console.log('do something')
-    }
-})
 
 function done() {
     socket.send(`done/${id}`)
