@@ -1,3 +1,6 @@
+const socket = new WebSocket('ws://192.168.10.188:8080');
+const id = `${Math.random()}`
+
 // let poseNet
 let video
 let classifier
@@ -50,4 +53,19 @@ function classifyAndGetFirstResult(classifier) {
                 confidence: results[0].confidence
             }
         })
+}
+
+socket.addEventListener('open', function (event) {
+    socket.send(`init/${id}`)
+})
+
+socket.addEventListener('message', ({data}) => {
+    console.log('received', data)
+    if (data.split('/')[0] === 'done' && data.split('/')[1] != id) {
+        console.log('do something')
+    }
+})
+
+function done () {
+    socket.send(`done/${id}`)
 }
