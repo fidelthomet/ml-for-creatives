@@ -53,7 +53,7 @@ function setup() {
 
     let label = "";
 
-    socket.addEventListener('message', ({dataStr}) => {
+    socket.addEventListener('message', (dataStr) => {
         console.log("received: " + dataStr)
         calibrationMode = false;
         clear();
