@@ -130,10 +130,5 @@ function getClassifier() {
 
 function classifyAndGetFirstResult(classifier, stillImage) {
     return classifier.classify(stillImage)
-        .then(results => {
-            return {
-                label: results[0].label,
-                confidence: results[0].confidence
-            }
-        })
+        .then(results => results.map(res => res.label))
 }
