@@ -55,8 +55,10 @@ function setup() {
 
     socket.addEventListener('message', (dataStr) => {
         console.log(dataStr.data)
-        calibrationMode = false;
-        clear();
+        if (calibrationMode){
+            calibrationMode = false;
+            clear();
+        }
         let data = JSON.parse(dataStr.data);
         if (data.id !== id) {
             classifyAndSend();
