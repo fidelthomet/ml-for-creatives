@@ -5,6 +5,12 @@ html, body {
 canvas {
   display: block;
 }
+button {
+  -webkit-appearance: none;
+  width: 50vw;
+  height: 50vh;
+  background: red;
+}
 
 video {
   display: none;

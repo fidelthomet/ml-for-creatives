@@ -1,3 +1,6 @@
+const socket = new WebSocket('ws://192.168.10.188:8080');
+const id = `${Math.random()}`
+
 // let poseNet
 let video;
 let classifier;
@@ -63,7 +66,8 @@ function searchUnsplash(keyword) {
     return fetch(`https://cors.ft0.ch/https://unsplash.com/search/photos/${keyword}`)
         .then(r => r.text())
         .then(d => {
-            const r = JSON.parse(d.match(/INITIAL_STATE__ = ([^;]*)/)[1])
+            const json = d.match(/INITIAL_STATE__ = (((?!;<\/script).)*)/)[1]
+      const r = JSON.parse(json)
             const photoIds = (Object.keys(r.entities.photos))
             const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
             loadImage(photo.urls.small, img => {
@@ -114,4 +118,19 @@ function classifyAndGetFirstResult(classifier, stillImage) {
                 confidence: results[0].confidence
             }
         })
+}
+
+socket.addEventListener('open', function (event) {
+    socket.send(`init/${id}`)
+})
+
+socket.addEventListener('message', ({data}) => {
+    console.log('received', data)
+    if (data.split('/')[0] === 'done' && data.split('/')[1] != id) {
+        console.log('do something')
+    }
+})
+
+function done () {
+    socket.send(`done/${id}`)
 }
