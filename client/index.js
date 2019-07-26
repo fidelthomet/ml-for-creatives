@@ -1,6 +1,11 @@
 const socket = new WebSocket('ws://192.168.10.188:8080');
 const id = `${Math.random()}`
 
+let style1;
+let inputImg;
+let resultImg;
+let result;
+
 // let poseNet
 let video
 let classifier
@@ -8,13 +13,16 @@ let classifier
 function setup() {
 
   createCanvas(1200, 800)
-  video = createCapture(VIDEO)
-  window.setInterval( () => {classify(video).then(d => {
-    console.log(d.label)
-    searchUnsplash(d.label)
-  })}, 5000)
+  video = createCapture(VIDEO).hide()
+  // window.setInterval( () => {
+    classify(video).then(d => {
+      searchUnsplash(d.label)
+    })
+  // }, 30000)
   // classifier = ml5.imageClassifier('MobileNet', video, onModelReady)
   // poseNet = ml5.poseNet(video, onModelReady)
+
+  style1 = ml5.styleTransfer('./models/wave/');
 }
 
 function searchUnsplash(keyword) {
@@ -25,19 +33,19 @@ function searchUnsplash(keyword) {
       const r = JSON.parse(json)
       const photoIds = (Object.keys(r.entities.photos))
       const photo = r.entities.photos[photoIds[Math.floor(Math.random() * photoIds.length)]]
-      loadImage(photo.urls.small, img => {
-        image(img, 0, 0);
+      // console.log(photo.urls)
+      loadImage(photo.urls.thumb, img => {
+        background(255)
+        image(img,0,0,img.width * 2, img.height * 2)
+        window.setTimeout(() => transferStyle(img), 50)
       })
     })
 }
-
-
 
 function classify(video){
     return getClassifier(video)
         .then(classifyAndGetFirstResult);
 }
-
 
 function getClassifier(video){
     return new Promise((resolve,reject) => {
@@ -54,6 +62,22 @@ function classifyAndGetFirstResult(classifier) {
                 confidence: results[0].confidence
             }
         })
+}
+
+function transferStyle (img) {
+  img.loadPixels();
+  if (style1 && style1.ready) {
+    console.log("Applying Style transfer...", img.imageData);
+  	style1.transfer(img.imageData, (err, result) => {
+      resultImg = createImg(result.src).hide()
+      console.log(result.src)
+      image(resultImg,0,0,resultImg.width * 2, resultImg.height * 2)
+
+      classify(video).then(d => {
+        searchUnsplash(d.label)
+      })
+    })
+  }
 }
 
 socket.addEventListener('open', function (event) {
