@@ -20,34 +20,24 @@ export default {
     }
   },
   mounted () {
-    this.messages.push({
-      url: 'https://images.unsplash.com/photo-1458938354258-3e66eb36eb7b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
-      text: 'donut',
-      user: 'left'
+    let serverIP = '192.168.10.188'
+
+    const socket = new WebSocket(`ws://${serverIP}:8080`)
+    const id = `${Math.random()}`
+
+    socket.addEventListener('open', function (event) {
+      socket.send(`init/${id}`)
     })
 
-    this.messages.push({
-      url: 'https://images.unsplash.com/photo-1458938354258-3e66eb36eb7b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
-      text: 'donut',
-      user: 'right'
-    })
-
-    this.messages.push({
-      url: 'https://images.unsplash.com/photo-1458938354258-3e66eb36eb7b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
-      text: 'donut',
-      user: 'left'
-    })
-
-    this.messages.push({
-      url: 'https://images.unsplash.com/photo-1458938354258-3e66eb36eb7b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
-      text: 'donut',
-      user: 'right'
-    })
-
-    this.messages.push({
-      url: 'https://images.unsplash.com/photo-1458938354258-3e66eb36eb7b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max',
-      text: 'donut',
-      user: 'left'
+    socket.addEventListener('message', ({ data }) => {
+      console.log(data)
+      const data2 = JSON.parse(data)
+      console.log('received', data)
+      this.messages.push({
+        url: data2.url,
+        text: data2.label,
+        user: 'left'
+      })
     })
   }
 }
