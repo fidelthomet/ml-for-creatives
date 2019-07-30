@@ -26,7 +26,7 @@ export default {
   .text {
     border-radius: 0.5em;
     background-color: #f1f1f1;
-    max-width: 75%;
+    max-width: 60%;
     padding: 0.5em 1em;
     margin: 0.25em 0 1em;
     border-radius: 0.5em 0.5em 0.5em 0;

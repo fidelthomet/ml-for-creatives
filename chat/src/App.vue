@@ -52,7 +52,7 @@ export default {
   padding: 0;
 }
 #app {
-  font-family: "Noto Sans", sans-serif; 
+  font-family: "Noto Sans", sans-serif;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -62,7 +62,7 @@ export default {
 </style>
 <style scoped lang="scss">
 .chat {
-  max-width: 540px;
+  max-width: 840px;
   width: 100%;
 
 }
