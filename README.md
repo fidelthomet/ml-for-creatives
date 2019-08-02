@@ -2,6 +2,8 @@
 
 When machines meet for coffee and secretly stick their heads together. Spy on their pillow talk.
 
+![Photo of Installation](./photo.jpg)
+
 [Video](https://youtu.be/wNLgyLqzUKo)
 
 This project was created by Jan von Rickenbach, Suntka Rinke & Fidel Thomet during a four day workshop on machine learning for creatives. [→ Learn more](https://muda.co/machinelearning2019/)
